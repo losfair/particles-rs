@@ -3,4 +3,8 @@ name = "particles"
 version = "0.1.0"
 authors = ["losfair <zhy20000919@hotmail.com>"]
 
+[lib]
+name = "particles"
+crate-type = ["cdylib"]
+
 [dependencies]

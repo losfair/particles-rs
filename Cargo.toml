@@ -2,6 +2,7 @@
 name = "particles"
 version = "0.1.0"
 authors = ["losfair <zhy20000919@hotmail.com>"]
+description = "Particles effects on the WebAssembly platform"
 license = "MIT"
 repository = "https://github.com/losfair/particles-rs"
 

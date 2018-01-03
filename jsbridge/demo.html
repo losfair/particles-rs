@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>particles-rs</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <style>
+            #particles {
+                position: fixed;
+                top: 0px;
+                left: 0px;
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="particles"></canvas>
+        <script src="bridge.js"></script>
+        <script>
+            window.addEventListener("load", async () => {
+                let targetElement = document.getElementById("particles");
+                targetElement.width = targetElement.clientWidth;
+                targetElement.height = targetElement.clientHeight;
+
+                let rt = new window.particles.RuntimeEnvironment();
+                await rt.initialize("particles.wasm");
+
+                let controller = new window.particles.Particles(
+                    rt,
+                    {
+                        nodeColor: "#92C0FD",
+                        lineColor: "#A7D3FF"
+                    },
+                    targetElement
+                );
+
+                let renderFrame = () => {
+                    controller.update();
+                    controller.render();
+                    window.requestAnimationFrame(renderFrame);
+                };
+                renderFrame();
+            });
+        </script>
+    </body>
+</html>

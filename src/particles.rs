@@ -19,7 +19,8 @@ pub struct RenderedNode {
 #[derive(Clone, Debug)]
 pub struct RenderedEdge {
     left: RenderedNode,
-    right: RenderedNode
+    right: RenderedNode,
+    opacity: f64
 }
 
 #[derive(Clone, Debug)]
@@ -127,6 +128,11 @@ impl ParticlesState {
             });
         }
         for edge in &self.edges {
+            let mut opacity = 1.0 - self.particles[edge.left].euclidean_distance(&self.particles[edge.right]) / self.config.max_edge_len;
+            if opacity < 0.0 {
+                opacity = 0.0;
+            }
+
             edges.push(RenderedEdge {
                 left: RenderedNode {
                     x: self.particles[edge.left].x,
@@ -135,7 +141,8 @@ impl ParticlesState {
                 right: RenderedNode {
                     x: self.particles[edge.right].x,
                     y: self.particles[edge.right].y
-                }
+                },
+                opacity: opacity
             });
         }
 

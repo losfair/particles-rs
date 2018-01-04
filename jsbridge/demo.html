@@ -31,11 +31,13 @@
                     {
                         nodeColor: "#92C0FD",
                         lineColor: "#A7D3FF",
-                        nParticles: 200
+                        nParticles: 100
                     },
                     targetElement
                 );
                 controller.enableCollision();
+                controller.setMagneticStrength(0.01);
+                //controller.setElectricStrength(0.01, 0.01);
 
                 window.controller = controller;
 

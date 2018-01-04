@@ -1,4 +1,5 @@
 use particles;
+use particles::{ParticlesState, ParticlesConfig};
 
 #[no_mangle]
 pub extern "C" fn particles_config_create(
@@ -6,42 +7,62 @@ pub extern "C" fn particles_config_create(
     width: usize,
     n_particles: usize,
     max_edge_len: f64,
-    velocity_factor: f64
-) -> *mut particles::ParticlesConfig {
-    let config = Box::new(particles::ParticlesConfig {
+    velocity_factor: f64,
+    particle_radius: f64
+) -> *mut ParticlesConfig {
+    let config = Box::new(ParticlesConfig {
         height: height,
         width: width,
         n_particles: n_particles,
         max_edge_len: max_edge_len,
-        velocity_factor: velocity_factor
+        velocity_factor: velocity_factor,
+        particle_radius: particle_radius,
+        collision_enabled: false
     });
     Box::into_raw(config)
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn particles_config_destroy(config: *mut particles::ParticlesConfig) {
+pub unsafe extern "C" fn particles_config_destroy(config: *mut ParticlesConfig) {
     Box::from_raw(config);
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn particles_config_enable_collision(config: &mut ParticlesConfig) {
+    config.collision_enabled = true;
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn particles_config_disable_collision(config: &mut ParticlesConfig) {
+    config.collision_enabled = false;
+}
+
+#[no_mangle]
 pub extern "C" fn particles_state_create(
-    config: *mut particles::ParticlesConfig
-) -> *mut particles::ParticlesState {
+    config: *mut ParticlesConfig
+) -> *mut ParticlesState {
     let config = unsafe { Box::from_raw(config) };
-    let state = Box::new(particles::ParticlesState::new(*config));
+    let state = Box::new(ParticlesState::new(*config));
     Box::into_raw(state)
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn particles_state_destroy(
-    state: *mut particles::ParticlesState
+    state: *mut ParticlesState
 ) {
     Box::from_raw(state);
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn particles_state_borrow_config(
+    state: &mut ParticlesState
+) -> &mut ParticlesConfig {
+    state.get_config_mut()
+}
+
+#[no_mangle]
 pub extern "C" fn particles_state_set_size(
-    state: &mut particles::ParticlesState,
+    state: &mut ParticlesState,
     height: usize,
     width: usize
 ) {
@@ -50,13 +71,13 @@ pub extern "C" fn particles_state_set_size(
 }
 
 #[no_mangle]
-pub extern "C" fn particles_state_update(state: &mut particles::ParticlesState) {
+pub extern "C" fn particles_state_update(state: &mut ParticlesState) {
     state.update_all();
 }
 
 #[no_mangle]
 pub extern "C" fn particles_state_render(
-    state: &mut particles::ParticlesState
+    state: &mut ParticlesState
 ) -> *mut particles::RenderedParticles {
     Box::into_raw(Box::new(state.render()))
 }

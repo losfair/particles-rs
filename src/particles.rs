@@ -1,5 +1,6 @@
 use imports;
 use std::collections::BTreeSet;
+use collision;
 
 #[derive(Clone, Debug)]
 pub struct ParticlesState {
@@ -35,7 +36,9 @@ pub struct ParticlesConfig {
     pub width: usize,
     pub n_particles: usize,
     pub max_edge_len: f64,
-    pub velocity_factor: f64
+    pub velocity_factor: f64,
+    pub particle_radius: f64,
+    pub collision_enabled: bool
 }
 
 #[derive(Clone, Debug)]
@@ -66,6 +69,14 @@ impl ParticlesState {
         }
     }
 
+    pub fn get_config(&self) -> &ParticlesConfig {
+        &self.config
+    }
+
+    pub fn get_config_mut(&mut self) -> &mut ParticlesConfig {
+        &mut self.config
+    }
+
     pub fn set_height(&mut self, height: usize) {
         self.config.height = height;
     }
@@ -75,6 +86,9 @@ impl ParticlesState {
     }
 
     pub fn update_all(&mut self) {
+        if self.config.collision_enabled {
+            self.evaluate_collisions();
+        }
         self.update_particles();
         self.update_edges();
     }
@@ -129,6 +143,38 @@ impl ParticlesState {
                         edges.insert(Edge::new(left, right));
                     }
                 }
+            }
+        }
+    }
+
+    pub fn evaluate_collisions(&mut self) {
+        for i in 0..self.particles.len() {
+            for j in (i + 1)..self.particles.len() {
+                if self.particles[i].euclidean_distance(&self.particles[j]) > self.config.particle_radius * 2.0 {
+                    continue;
+                }
+
+                let (
+                    (left_vx, left_vy),
+                    (right_vx, right_vy)
+                ) = {
+                    let left = &self.particles[i];
+                    let right = &self.particles[j];
+
+                    collision::collision_2d(
+                        1.0,
+                        1.0,
+                        1.0,
+                        (left.x, left.y),
+                        (right.x, right.y),
+                        (left.velocity_x, left.velocity_y),
+                        (right.velocity_x, right.velocity_y)
+                    )
+                };
+                self.particles[i].velocity_x = left_vx;
+                self.particles[i].velocity_y = left_vy;
+                self.particles[j].velocity_x = right_vx;
+                self.particles[j].velocity_y = right_vy;
             }
         }
     }

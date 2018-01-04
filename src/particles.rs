@@ -39,7 +39,9 @@ pub struct ParticlesConfig {
     pub velocity_factor: f64,
     pub particle_radius: f64,
     pub collision_enabled: bool,
-    pub edges_enabled: bool
+    pub edges_enabled: bool,
+    pub magnetic_strength: f64,
+    pub electric_strength: (f64, f64)
 }
 
 #[derive(Clone, Debug)]
@@ -47,7 +49,8 @@ pub struct Particle {
     x: f64, // vertical
     y: f64, // horizontal
     velocity_x: f64,
-    velocity_y: f64
+    velocity_y: f64,
+    charge: f64
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -87,6 +90,13 @@ impl ParticlesState {
     }
 
     pub fn update_all(&mut self) {
+        if self.config.magnetic_strength != 0.0 {
+            self.evaluate_magnetic_field();
+        }
+        if self.config.electric_strength.0 != 0.0 || self.config.electric_strength.1 != 0.0 {
+            self.evaluate_electric_field();
+        }
+
         if self.config.collision_enabled {
             self.evaluate_collisions();
         }
@@ -149,6 +159,28 @@ impl ParticlesState {
                     }
                 }
             }
+        }
+    }
+
+    pub fn evaluate_magnetic_field(&mut self) {
+        for particle in &mut self.particles {
+            let (nv_x, nv_y) = (particle.velocity_y, -particle.velocity_x);
+
+            let dt_x = particle.charge * nv_x * self.config.magnetic_strength;
+            let dt_y = particle.charge * nv_y * self.config.magnetic_strength;
+
+            particle.velocity_x += dt_x;
+            particle.velocity_y += dt_y;
+        }
+    }
+
+    pub fn evaluate_electric_field(&mut self) {
+        for particle in &mut self.particles {
+            let dt_x = particle.charge * self.config.electric_strength.0;
+            let dt_y = particle.charge * self.config.electric_strength.1;
+
+            particle.velocity_x += dt_x;
+            particle.velocity_y += dt_y;
         }
     }
 
@@ -228,7 +260,8 @@ impl Particle {
             x: x,
             y: y,
             velocity_x: (imports::rand01() - 0.5) * 2.0, // (-1, 1)
-            velocity_y: (imports::rand01() - 0.5) * 2.0 // (-1, 1)
+            velocity_y: (imports::rand01() - 0.5) * 2.0, // (-1, 1)
+            charge: (imports::rand01() - 0.5) * 2.0 // (-1, 1)
         }
     }
 

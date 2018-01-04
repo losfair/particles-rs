@@ -18,7 +18,9 @@ pub extern "C" fn particles_config_create(
         velocity_factor: velocity_factor,
         particle_radius: particle_radius,
         collision_enabled: false,
-        edges_enabled: true
+        edges_enabled: true,
+        magnetic_strength: 0.0,
+        electric_strength: (0.0, 0.0)
     });
     Box::into_raw(config)
 }
@@ -29,23 +31,40 @@ pub unsafe extern "C" fn particles_config_destroy(config: *mut ParticlesConfig) 
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn particles_config_enable_collision(config: &mut ParticlesConfig) {
+pub extern "C" fn particles_config_enable_collision(config: &mut ParticlesConfig) {
     config.collision_enabled = true;
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn particles_config_disable_collision(config: &mut ParticlesConfig) {
+pub extern "C" fn particles_config_disable_collision(config: &mut ParticlesConfig) {
     config.collision_enabled = false;
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn particles_config_enable_edges(config: &mut ParticlesConfig) {
+pub extern "C" fn particles_config_enable_edges(config: &mut ParticlesConfig) {
     config.edges_enabled = true;
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn particles_config_disable_edges(config: &mut ParticlesConfig) {
+pub extern "C" fn particles_config_disable_edges(config: &mut ParticlesConfig) {
     config.edges_enabled = false;
+}
+
+#[no_mangle]
+pub extern "C" fn particles_config_set_magnetic_strength(
+    config: &mut ParticlesConfig,
+    v: f64
+) {
+    config.magnetic_strength = v;
+}
+
+#[no_mangle]
+pub extern "C" fn particles_config_set_electric_strength(
+    config: &mut ParticlesConfig,
+    x: f64,
+    y: f64
+) {
+    config.electric_strength = (x, y);
 }
 
 #[no_mangle]

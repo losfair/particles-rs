@@ -37,6 +37,8 @@
                 );
                 controller.enableCollision();
 
+                window.controller = controller;
+
                 let renderFrame = () => {
                     controller.update();
                     controller.render();

@@ -57,6 +57,16 @@ export class Particles {
         this.rtEnv.instance.exports.particles_config_disable_collision(rtConfig);
     }
 
+    enableEdges() {
+        let rtConfig = this._borrow_config();
+        this.rtEnv.instance.exports.particles_config_enable_edges(rtConfig);
+    }
+
+    disableEdges() {
+        let rtConfig = this._borrow_config();
+        this.rtEnv.instance.exports.particles_config_disable_edges(rtConfig);
+    }
+
     render() {
         let output = this.rtEnv.instance.exports.particles_state_render(this.stateHandle);
 

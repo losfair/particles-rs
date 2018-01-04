@@ -17,7 +17,8 @@ pub extern "C" fn particles_config_create(
         max_edge_len: max_edge_len,
         velocity_factor: velocity_factor,
         particle_radius: particle_radius,
-        collision_enabled: false
+        collision_enabled: false,
+        edges_enabled: true
     });
     Box::into_raw(config)
 }
@@ -35,6 +36,16 @@ pub unsafe extern "C" fn particles_config_enable_collision(config: &mut Particle
 #[no_mangle]
 pub unsafe extern "C" fn particles_config_disable_collision(config: &mut ParticlesConfig) {
     config.collision_enabled = false;
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn particles_config_enable_edges(config: &mut ParticlesConfig) {
+    config.edges_enabled = true;
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn particles_config_disable_edges(config: &mut ParticlesConfig) {
+    config.edges_enabled = false;
 }
 
 #[no_mangle]

@@ -38,7 +38,8 @@ pub struct ParticlesConfig {
     pub max_edge_len: f64,
     pub velocity_factor: f64,
     pub particle_radius: f64,
-    pub collision_enabled: bool
+    pub collision_enabled: bool,
+    pub edges_enabled: bool
 }
 
 #[derive(Clone, Debug)]
@@ -89,8 +90,12 @@ impl ParticlesState {
         if self.config.collision_enabled {
             self.evaluate_collisions();
         }
+
         self.update_particles();
-        self.update_edges();
+
+        if self.config.edges_enabled {
+            self.update_edges();
+        }
     }
 
     pub fn update_particles(&mut self) {

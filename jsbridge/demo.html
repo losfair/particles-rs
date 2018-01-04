@@ -30,10 +30,12 @@
                     rt,
                     {
                         nodeColor: "#92C0FD",
-                        lineColor: "#A7D3FF"
+                        lineColor: "#A7D3FF",
+                        nParticles: 200
                     },
                     targetElement
                 );
+                controller.enableCollision();
 
                 let renderFrame = () => {
                     controller.update();

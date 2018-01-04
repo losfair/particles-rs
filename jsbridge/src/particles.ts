@@ -17,7 +17,8 @@ export class Particles {
             Math.floor(config.width),
             Math.floor(config.nParticles),
             config.maxEdgeLen,
-            config.velocityFactor
+            config.velocityFactor,
+            config.nodeRadius
         );
         let stateHandle = rtEnv.instance.exports.particles_state_create(configInstance);
         this.stateHandle = stateHandle;
@@ -40,6 +41,20 @@ export class Particles {
             Math.floor(height),
             Math.floor(width)
         );
+    }
+
+    _borrow_config() : number {
+        return this.rtEnv.instance.exports.particles_state_borrow_config(this.stateHandle);
+    }
+
+    enableCollision() {
+        let rtConfig = this._borrow_config();
+        this.rtEnv.instance.exports.particles_config_enable_collision(rtConfig);
+    }
+
+    disableCollision() {
+        let rtConfig = this._borrow_config();
+        this.rtEnv.instance.exports.particles_config_disable_collision(rtConfig);
     }
 
     render() {

@@ -67,6 +67,24 @@ export class Particles {
         this.rtEnv.instance.exports.particles_config_disable_edges(rtConfig);
     }
 
+    setMagneticStrength(v: number) {
+        if(typeof(v) != "number") {
+            throw new TypeError("value must be a number");
+        }
+
+        let rtConfig = this._borrow_config();
+        this.rtEnv.instance.exports.particles_config_set_magnetic_strength(rtConfig, v);
+    }
+
+    setElectricStrength(x: number, y: number) {
+        if(typeof(x) != "number" || typeof(y) != "number") {
+            throw new TypeError("x & y must be numbers");
+        }
+
+        let rtConfig = this._borrow_config();
+        this.rtEnv.instance.exports.particles_config_set_electric_strength(rtConfig, x, y);
+    }
+
     render() {
         let output = this.rtEnv.instance.exports.particles_state_render(this.stateHandle);
 

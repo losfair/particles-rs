@@ -80,12 +80,28 @@ impl ParticlesState {
     }
 
     pub fn update_particles(&mut self) {
-        for particle in &mut self.particles {
+        let mut out_of_view_particle_ids: BTreeSet<usize> = BTreeSet::new();
+
+        for i in 0..self.particles.len() {
+            let particle = &mut self.particles[i];
             particle.x += particle.velocity_x * self.config.velocity_factor;
             particle.y += particle.velocity_y * self.config.velocity_factor;
             if particle.out_of_view(&self.config) {
-                *particle = Particle::random(&self.config);
+                out_of_view_particle_ids.insert(i);
             }
+        }
+
+        for id in &out_of_view_particle_ids {
+            let mut new_particle = Particle::random(&self.config);
+            let position_particle_id = (imports::rand01() * 1000000007 as f64) as usize % self.particles.len();
+
+            if out_of_view_particle_ids.get(&position_particle_id).is_none() {
+                let position_particle = &self.particles[position_particle_id];
+                new_particle.x = position_particle.x;
+                new_particle.y = position_particle.y;
+            }
+
+            self.particles[*id] = new_particle;
         }
     }
 

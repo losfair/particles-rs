@@ -41,12 +41,7 @@
 
                 window.controller = controller;
 
-                let renderFrame = () => {
-                    controller.update();
-                    controller.render();
-                    window.requestAnimationFrame(renderFrame);
-                };
-                renderFrame();
+                controller.begin();
             });
         </script>
     </body>

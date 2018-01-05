@@ -6,6 +6,7 @@ export class Particles {
     private config: ParticlesConfig;
     private stateHandle: number;
     private canvas: HTMLCanvasElement;
+    private animationHandle: number;
 
     constructor(rtEnv: RuntimeEnvironment, config: ParticlesConfig, canvas: HTMLCanvasElement) {
         normalizeParticlesConfigInPlace(config, canvas);
@@ -23,6 +24,7 @@ export class Particles {
         let stateHandle = rtEnv.instance.exports.particles_state_create(configInstance);
         this.stateHandle = stateHandle;
         this.canvas = canvas;
+        this.animationHandle = null;
     }
 
     destroy() {
@@ -83,6 +85,34 @@ export class Particles {
 
         let rtConfig = this._borrowConfig();
         this.rtEnv.instance.exports.particles_config_set_electric_strength(rtConfig, x, y);
+    }
+
+    begin() {
+        if(this.animationHandle !== null) {
+            window.cancelAnimationFrame(this.animationHandle);
+            this.animationHandle = null;
+        }
+
+        let renderFrame = () => {
+            this.animationHandle = null;
+
+            this.update();
+            this.render();
+
+            this.animationHandle = window.requestAnimationFrame(renderFrame);
+        };
+
+        this.animationHandle = window.requestAnimationFrame(renderFrame);
+    }
+
+    stop() {
+        if(this.animationHandle !== null) {
+            window.cancelAnimationFrame(this.animationHandle);
+            this.animationHandle = null;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     render() {

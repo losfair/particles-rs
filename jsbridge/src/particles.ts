@@ -35,7 +35,7 @@ export class Particles {
         this.rtEnv.instance.exports.particles_state_update(this.stateHandle);
     }
 
-    set_size(height: number, width: number) {
+    setSize(height: number, width: number) {
         this.rtEnv.instance.exports.particles_state_set_size(
             this.stateHandle,
             Math.floor(height),
@@ -43,27 +43,27 @@ export class Particles {
         );
     }
 
-    _borrow_config() : number {
+    _borrowConfig() : number {
         return this.rtEnv.instance.exports.particles_state_borrow_config(this.stateHandle);
     }
 
     enableCollision() {
-        let rtConfig = this._borrow_config();
+        let rtConfig = this._borrowConfig();
         this.rtEnv.instance.exports.particles_config_enable_collision(rtConfig);
     }
 
     disableCollision() {
-        let rtConfig = this._borrow_config();
+        let rtConfig = this._borrowConfig();
         this.rtEnv.instance.exports.particles_config_disable_collision(rtConfig);
     }
 
     enableEdges() {
-        let rtConfig = this._borrow_config();
+        let rtConfig = this._borrowConfig();
         this.rtEnv.instance.exports.particles_config_enable_edges(rtConfig);
     }
 
     disableEdges() {
-        let rtConfig = this._borrow_config();
+        let rtConfig = this._borrowConfig();
         this.rtEnv.instance.exports.particles_config_disable_edges(rtConfig);
     }
 
@@ -72,7 +72,7 @@ export class Particles {
             throw new TypeError("value must be a number");
         }
 
-        let rtConfig = this._borrow_config();
+        let rtConfig = this._borrowConfig();
         this.rtEnv.instance.exports.particles_config_set_magnetic_strength(rtConfig, v);
     }
 
@@ -81,7 +81,7 @@ export class Particles {
             throw new TypeError("x & y must be numbers");
         }
 
-        let rtConfig = this._borrow_config();
+        let rtConfig = this._borrowConfig();
         this.rtEnv.instance.exports.particles_config_set_electric_strength(rtConfig, x, y);
     }
 

@@ -7,6 +7,7 @@ export class Particles {
     private stateHandle: number;
     private canvas: HTMLCanvasElement;
     private animationHandle: number;
+    private drawParticle: (context: CanvasRenderingContext2D, x: number, y: number) => void;
 
     constructor(rtEnv: RuntimeEnvironment, config: ParticlesConfig, canvas: HTMLCanvasElement) {
         normalizeParticlesConfigInPlace(config, canvas);
@@ -25,6 +26,7 @@ export class Particles {
         this.stateHandle = stateHandle;
         this.canvas = canvas;
         this.animationHandle = null;
+        this.drawParticle = null;
     }
 
     destroy() {
@@ -139,10 +141,12 @@ export class Particles {
         let canvasCtx = this.canvas.getContext("2d");
         canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
-        canvasCtx.fillStyle = this.config.nodeColor;
-        canvasCtx.strokeStyle = this.config.lineColor;
-        canvasCtx.lineWidth = this.config.lineWidth;
-        canvasCtx.globalAlpha = 1.0;
+        let restoreStyles = () => {
+            canvasCtx.fillStyle = this.config.nodeColor;
+            canvasCtx.strokeStyle = this.config.lineColor;
+            canvasCtx.lineWidth = this.config.lineWidth;
+            canvasCtx.globalAlpha = 1.0;
+        };
 
         for(let i = 0; i < nNodes; i++) {
             let base = nodesHandle / 8 + i * 2; // f64Base + i * nFields
@@ -152,10 +156,20 @@ export class Particles {
             let x = nodesView[ptrX];
             let y = nodesView[ptrY];
 
-            canvasCtx.beginPath();
-            canvasCtx.arc(y, x, this.config.nodeRadius, 0, 2 * Math.PI);
-            canvasCtx.fill();
+            restoreStyles();
+
+            // our internal implementation uses a reversed order for the (x, y) pair
+
+            if(this.drawParticle) {
+                this.drawParticle(canvasCtx, y, x);
+            } else {
+                canvasCtx.beginPath();
+                canvasCtx.arc(y, x, this.config.nodeRadius, 0, 2 * Math.PI);
+                canvasCtx.fill();
+            }
         }
+
+        restoreStyles();
 
         for(let i = 0; i < nEdges; i++) {
             let base = edgesHandle / 8 + i * 5; // f64Base + i * nFields

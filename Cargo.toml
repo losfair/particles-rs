@@ -10,4 +10,16 @@ repository = "https://github.com/losfair/particles-rs"
 name = "particles"
 crate-type = ["cdylib"]
 
+[features]
+default = ["particles-api", "glue-api"]
+particles-api = []
+glue-api = []
+
+[profile.release]
+lto = true
+
 [dependencies]
+
+[dependencies.rand]
+version = "0.4"
+default-features = false

@@ -1,4 +1,4 @@
-use imports;
+use rng;
 use std::collections::BTreeSet;
 use collision;
 
@@ -122,7 +122,7 @@ impl ParticlesState {
 
         for id in &out_of_view_particle_ids {
             let mut new_particle = Particle::random(&self.config);
-            let position_particle_id = (imports::rand01() * 1000000007 as f64) as usize % self.particles.len();
+            let position_particle_id = (rng::open01() * (self.particles.len() as f64)) as usize;
 
             if out_of_view_particle_ids.get(&position_particle_id).is_none() {
                 let position_particle = &self.particles[position_particle_id];
@@ -154,7 +154,7 @@ impl ParticlesState {
                 let left_particle = &self.particles[left];
                 let right_particle = &self.particles[right];
                 if left_particle.euclidean_distance(right_particle) < self.config.max_edge_len {
-                    if imports::rand01() > 0.5 {
+                    if rng::open01() > 0.5 {
                         edges.insert(Edge::new(left, right));
                     }
                 }
@@ -254,14 +254,14 @@ impl ParticlesState {
 
 impl Particle {
     pub fn random(config: &ParticlesConfig) -> Particle {
-        let x = imports::rand01() * (config.height as f64);
-        let y = imports::rand01() * (config.width as f64);
+        let x = rng::open01() * (config.height as f64);
+        let y = rng::open01() * (config.width as f64);
         Particle {
             x: x,
             y: y,
-            velocity_x: (imports::rand01() - 0.5) * 2.0, // (-1, 1)
-            velocity_y: (imports::rand01() - 0.5) * 2.0, // (-1, 1)
-            charge: (imports::rand01() - 0.5) * 2.0 // (-1, 1)
+            velocity_x: (rng::open01() - 0.5) * 2.0, // (-1, 1)
+            velocity_y: (rng::open01() - 0.5) * 2.0, // (-1, 1)
+            charge: (rng::open01() - 0.5) * 2.0 // (-1, 1)
         }
     }
 

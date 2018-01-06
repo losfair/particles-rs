@@ -19,5 +19,6 @@ build_bridge:
 
 post_build:
 	node jsbridge/scripts/generate_static_loader.js build/particles.wasm > build/particles-code.js
+	node jsbridge/scripts/minify_all.js
 
 .PHONY: prepare build_core

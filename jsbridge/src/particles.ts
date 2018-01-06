@@ -49,6 +49,15 @@ export class Particles {
         return this.rtEnv.instance.exports.particles_state_borrow_config(this.stateHandle);
     }
 
+    setVelocityFactor(v: number) {
+        if(typeof(v) != "number") {
+            throw new TypeError("value must be a number");
+        }
+
+        let rtConfig = this._borrowConfig();
+        this.rtEnv.instance.exports.particles_config_set_velocity_factor(rtConfig, v);
+    }
+
     enableCollision() {
         let rtConfig = this._borrowConfig();
         this.rtEnv.instance.exports.particles_config_enable_collision(rtConfig);

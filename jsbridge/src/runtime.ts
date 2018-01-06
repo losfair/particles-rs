@@ -1,3 +1,5 @@
+import Common from "./common";
+
 let wasmModule: WebAssembly.Module = null;
 
 export class RuntimeEnvironment {
@@ -11,8 +13,13 @@ export class RuntimeEnvironment {
 
     public async initialize(url: string = null) {
         if(!wasmModule) {
-            let codeResponse = await fetch(url || "particles.wasm");
-            let code = await codeResponse.arrayBuffer();
+            let code;
+            if(Common.code) {
+                code = Common.code.buffer;
+            } else {
+                let codeResponse = await fetch(url || "particles.wasm");
+                code = await codeResponse.arrayBuffer();
+            }
             wasmModule = await WebAssembly.compile(code);
         }
 

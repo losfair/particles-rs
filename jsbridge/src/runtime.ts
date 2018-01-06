@@ -15,7 +15,7 @@ export class RuntimeEnvironment {
         if(!wasmModule) {
             let code;
             if(Common.code) {
-                code = Common.code.buffer;
+                code = Common.code.buffer as ArrayBuffer;
             } else {
                 let codeResponse = await fetch(url || "particles.wasm");
                 code = await codeResponse.arrayBuffer();

@@ -31,6 +31,14 @@ pub unsafe extern "C" fn particles_config_destroy(config: *mut ParticlesConfig) 
 }
 
 #[no_mangle]
+pub extern "C" fn particles_config_set_velocity_factor(
+    config: &mut ParticlesConfig,
+    v: f64
+) {
+    config.velocity_factor = v;
+}
+
+#[no_mangle]
 pub extern "C" fn particles_config_enable_collision(config: &mut ParticlesConfig) {
     config.collision_enabled = true;
 }

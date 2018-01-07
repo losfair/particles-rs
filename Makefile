@@ -1,24 +1,19 @@
 all:
 	make prepare
-	make build
+	make build_all
 
 prepare:
 	rm -r build | true
 	mkdir build
 
-build: build_core build_bridge
-	make post_build
+build_all: build_core build_bridge
 
 build_core:
 	cargo build --release --target wasm32-unknown-unknown
 	wasm-gc target/wasm32-unknown-unknown/release/particles.wasm build/particles.wasm
 
 build_bridge:
-	cd jsbridge && webpack
+	cd jsbridge && $(WEBPACK_COMMAND)
 	cp jsbridge/bridge.js jsbridge/demo.html build/
-
-post_build:
-	node jsbridge/scripts/generate_static_loader.js build/particles.wasm > build/particles-code.js
-	node jsbridge/scripts/minify_all.js
 
 .PHONY: prepare build_core

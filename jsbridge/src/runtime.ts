@@ -32,6 +32,8 @@ export class RuntimeEnvironment {
 
         this.instance = instance;
         this.mem = instance.exports.memory as WebAssembly.Memory;
+
+        this.checkBuildId();
     }
 
     public buildEnv() {
@@ -42,8 +44,35 @@ export class RuntimeEnvironment {
         };
     }
 
+    public checkBuildId() {
+        let localBuildId = Common.buildId;
+        if(localBuildId.endsWith("development")) {
+            console.log("Running in development mode. Skipping build id check.");
+            return;
+        }
+
+        let raw = this.buildString(localBuildId);
+        let ok: number = this.instance.exports.g_check_build_id(raw);
+        this.deallocate(raw);
+
+        if(ok !== 1) {
+            throw new TypeError("Build ID mismatch");
+        }
+    }
+
+    public buildString(s: string) {
+        let encoder = new (window as any).TextEncoder();
+        let raw: Uint8Array = encoder.encode(s);
+
+        let mem = this.allocate(raw.length + 1);
+        this.writePtr(mem, raw, raw.length);
+        this.writePtrByte(mem + raw.length, 0);
+
+        return mem;
+    }
+
     public allocate(len: number) {
-        let m = this.instance.exports.g_alloc(len);
+        let m: number = this.instance.exports.g_alloc(len);
         return m;
     }
 
@@ -60,6 +89,11 @@ export class RuntimeEnvironment {
         for(let i = 0; i < len; i++) {
             arrayView[ptr + i] = data[i];
         }
+    }
+
+    public writePtrByte(ptr: number, byte: number) {
+        let arrayView = new Uint8Array(this.mem.buffer);
+        arrayView[ptr] = byte;
     }
 
     public readString(ptr: number, len: number = 0) : string {

@@ -1,5 +1,5 @@
 use std::os::raw::c_char;
-use std::ffi::CString;
+use std::ffi::{CString, CStr};
 
 #[no_mangle]
 pub unsafe extern "C" fn g_destroy_cstring(s: *mut c_char) {
@@ -31,6 +31,16 @@ pub unsafe extern "C" fn g_free(mem: *mut u8) {
     //eprintln!("free: {:?} {}+{}", mem, ptr_size, len);
 
     Box::from_raw(::std::slice::from_raw_parts_mut(mem, len + ptr_size));
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn g_check_build_id(build_id: *const c_char) -> i32 {
+    let build_id = CStr::from_ptr(build_id).to_str().unwrap();
+    if build_id != ::PRS_BUILD_ID {
+        0
+    } else {
+        1
+    }
 }
 
 #[test]

@@ -10,3 +10,5 @@ pub mod glue;
 
 #[cfg(feature = "particles-api")]
 pub mod particles_api;
+
+pub static PRS_BUILD_ID: &'static str = env!("PRS_BUILD_ID");

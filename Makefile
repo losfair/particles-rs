@@ -14,6 +14,7 @@ build_core:
 
 build_bridge:
 	cd jsbridge && $(WEBPACK_COMMAND)
-	cp jsbridge/bridge.js jsbridge/demo.html build/
+	cp jsbridge/bridge.js build/particles-bridge.js
+	cp jsbridge/demo.html build/
 
 .PHONY: prepare build_core

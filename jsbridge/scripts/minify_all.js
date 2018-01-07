@@ -2,7 +2,7 @@ const fs = require("fs");
 const uglifyjs = require("uglify-es");
 
 [
-    "bridge.js",
+    "particles-bridge.js",
     "particles-code.js"
 ].map(v => "build/" + v)
 .forEach(filePath => {
